@@ -1,0 +1,25 @@
+{
+  "name": "discord-spam-bot",
+  "version": "1.0.0",
+  "description": "Bot de Discord que detecta spam cross-canal (texto e imágenes) y silencia al autor.",
+  "type": "module",
+  "main": "dist/index.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.16.3",
+    "sharp": "^0.33.5",
+    "sharp-phash": "^2.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
