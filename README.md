@@ -10,19 +10,38 @@ Detecta duplicados por:
 
 ## 1. Crear el bot en Discord
 
-1. Andá al [Discord Developer Portal](https://discord.com/developers/applications) → **New Application**.
-2. **Bot** → **Reset Token** y copiá el token (va en `DISCORD_TOKEN`).
-3. En **Bot → Privileged Gateway Intents**, activá:
-   - **MESSAGE CONTENT INTENT** (obligatorio para leer el texto).
-   - **SERVER MEMBERS INTENT** (recomendado).
-4. Invitá el bot con permisos **Manage Roles** y **Manage Messages**. Podés usar
-   **OAuth2 → URL Generator** con scope `bot` y esos dos permisos.
+> Entre paréntesis dejo el nombre en inglés de cada opción por si tu portal o
+> cliente cambia el idioma o alguna traducción no coincide.
+
+1. Andá al [Portal de Desarrolladores de Discord](https://discord.com/developers/applications) → **Nueva aplicación** (*New Application*).
+2. **Bot** → **Restablecer token** (*Reset Token*) y copiá el token (va en `DISCORD_TOKEN`).
+3. En **Bot → Privileged Gateway Intents** (ese encabezado el portal lo deja en inglés), activá:
+   - **Intent de contenido de mensajes** (*Message Content Intent*) — obligatorio para leer el texto.
+   - **Intent de miembros del servidor** (*Server Members Intent*) — recomendado.
+4. Invitá el bot a tu servidor con los permisos **Gestionar roles** (*Manage Roles*)
+   y **Gestionar mensajes** (*Manage Messages*). Esos dos permisos dan el valor
+   `268443648`. Ojo: el número que muestra el portal **no es un link**, solo el
+   cálculo de permisos. Para invitarlo tenés dos formas:
+
+   **Forma rápida** — copiá el **ID de la aplicación** (en *Información general*)
+   y abrí en el navegador:
+   ```
+   https://discord.com/api/oauth2/authorize?client_id=1523154168838230027&permissions=268443648&scope=bot
+   ```
+   Elegí tu servidor y autorizá.
+
+   **Forma con el portal** — **OAuth2 → Generador de URL** (*URL Generator*):
+   marcá el scope **`bot`**, después marcá **Gestionar roles** y **Gestionar mensajes**,
+   y copiá la URL que se genera al final de la página. Abrila y autorizá.
 
 ## 2. Configurar el rol "Silenciado"
 
-- Creá (si no existe) el rol **Silenciado** y configurá los permisos para que **no pueda enviar mensajes** (permiso del rol y/o *overwrites* en los canales).
-- **Importante**: en **Configuración del servidor → Roles**, el rol del **bot debe estar por encima** de "Silenciado", si no Discord no lo deja asignarlo.
-- Activá **Modo Desarrollador** (Ajustes de usuario → Avanzado), clic derecho sobre el rol → **Copiar ID**. Ese valor va en `MUTED_ROLE_ID`.
+- Creá (si no existe) el rol **Silenciado** y configurá sus permisos para que
+  tenga **desactivado "Enviar mensajes"** (en el rol y/o en los permisos de cada canal).
+- **Importante**: en **Configuración del servidor → Roles**, arrastrá el rol del
+  **bot para que quede por encima** de "Silenciado"; si no, Discord no lo deja asignarlo.
+- Activá el **Modo desarrollador** en **Ajustes de usuario → Avanzado**. Después,
+  clic derecho sobre el rol → **Copiar ID**. Ese valor va en `MUTED_ROLE_ID`.
 
 ## 3. Configuración (.env)
 
