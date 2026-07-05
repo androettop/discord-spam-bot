@@ -1,3 +1,7 @@
+// Carga las variables de .env (si existe). En Docker no hay .env y usa las
+// variables reales del entorno; dotenv simplemente no hace nada en ese caso.
+// Debe ir ANTES de importar config.ts, que lee process.env al importarse.
+import "dotenv/config";
 import {
   Client,
   Events,
