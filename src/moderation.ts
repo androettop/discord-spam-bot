@@ -8,20 +8,20 @@ import type { MsgRecord } from "./detector.js";
 import { config } from "./config.js";
 
 /**
- * Aplica la moderación sobre un brote detectado: asigna el rol "Silenciado"
- * al autor y borra todos los mensajes involucrados.
+ * Applies moderation to a detected burst: assigns the "Muted" role to the
+ * author and deletes all involved messages.
  */
 export async function moderateBurst(
   client: Client,
   member: GuildMember | null,
   burst: MsgRecord[],
 ): Promise<void> {
-  const userId = burst[0]?.userId ?? "desconocido";
+  const userId = burst[0]?.userId ?? "unknown";
   const channels = new Set(burst.map((r) => r.channelId));
 
   console.warn(
-    `[mod] Spam detectado de ${userId} en ${channels.size} canales ` +
-      `(${burst.length} mensajes). Aplicando rol y borrando.`,
+    `[mod] Spam detected from ${userId} across ${channels.size} channels ` +
+      `(${burst.length} messages). Applying role and deleting.`,
   );
 
   await assignMutedRole(member, userId);
@@ -33,22 +33,22 @@ async function assignMutedRole(
   userId: string,
 ): Promise<void> {
   if (!member) {
-    console.warn(`[mod] No se pudo obtener el member de ${userId}; no se asigna rol.`);
+    console.warn(`[mod] Could not resolve member ${userId}; role not assigned.`);
     return;
   }
-  if (member.roles.cache.has(config.mutedRoleId)) return; // ya silenciado
+  if (member.roles.cache.has(config.mutedRoleId)) return; // already muted
 
   try {
-    await member.roles.add(config.mutedRoleId, "Spam cross-canal detectado");
-    console.warn(`[mod] Rol "Silenciado" asignado a ${userId}.`);
+    await member.roles.add(config.mutedRoleId, "Cross-channel spam detected");
+    console.warn(`[mod] "Muted" role assigned to ${userId}.`);
   } catch (err) {
     if (err instanceof DiscordAPIError) {
       console.error(
-        `[mod] No se pudo asignar el rol a ${userId} (¿permisos/jerarquía?): ` +
+        `[mod] Could not assign role to ${userId} (permissions/hierarchy?): ` +
           `${err.code} ${err.message}`,
       );
     } else {
-      console.error(`[mod] Error inesperado asignando rol a ${userId}:`, err);
+      console.error(`[mod] Unexpected error assigning role to ${userId}:`, err);
     }
   }
 }
@@ -61,9 +61,9 @@ async function deleteMessages(client: Client, burst: MsgRecord[]): Promise<void>
         if (!channel || !channel.isTextBased()) return;
         await (channel as TextBasedChannel).messages.delete(r.messageId);
       } catch (err) {
-        // 10008 = Unknown Message (ya borrado). Se ignora silenciosamente.
+        // 10008 = Unknown Message (already deleted). Silently ignored.
         if (err instanceof DiscordAPIError && err.code === 10008) return;
-        console.error(`[mod] No se pudo borrar el mensaje ${r.messageId}:`, err);
+        console.error(`[mod] Could not delete message ${r.messageId}:`, err);
       }
     }),
   );

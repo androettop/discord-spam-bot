@@ -1,7 +1,7 @@
 {
   "name": "discord-spam-bot",
   "version": "1.0.0",
-  "description": "Bot de Discord que detecta spam cross-canal (texto e imágenes) y silencia al autor.",
+  "description": "Discord bot that detects cross-channel spam (text and images) and mutes the author.",
   "type": "module",
   "main": "dist/index.js",
   "engines": {

@@ -1,6 +1,6 @@
 services:
   bot:
-    # Reemplazá <owner> por tu usuario/organización de GitHub (en minúsculas).
+    # Replace the owner with your GitHub username/org (lowercase).
     image: ghcr.io/androettop/discord-spam-bot:latest
     container_name: discord-spam-bot
     env_file: .env

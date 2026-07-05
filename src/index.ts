@@ -1,6 +1,6 @@
-// Carga las variables de .env (si existe). En Docker no hay .env y usa las
-// variables reales del entorno; dotenv simplemente no hace nada en ese caso.
-// Debe ir ANTES de importar config.ts, que lee process.env al importarse.
+// Loads variables from .env (if present). Without a .env file it does nothing
+// and the process uses the real environment variables. Must run BEFORE importing
+// config.ts, which reads process.env at import time.
 import "dotenv/config";
 import {
   Client,
@@ -29,7 +29,7 @@ const client = new Client({
   partials: [Partials.Channel],
 });
 
-/** Descarga y hashea los adjuntos que sean imágenes. */
+/** Downloads and hashes the attachments that are images. */
 async function hashAttachments(message: Message): Promise<string[]> {
   const hashes: string[] = [];
   for (const att of message.attachments.values()) {
@@ -41,29 +41,29 @@ async function hashAttachments(message: Message): Promise<string[]> {
       const h = await hashImage(buffer);
       if (h) hashes.push(h);
     } catch (err) {
-      console.warn(`[index] No se pudo descargar/hashear adjunto ${att.name}:`, err);
+      console.warn(`[index] Could not download/hash attachment ${att.name}:`, err);
     }
   }
   return hashes;
 }
 
 client.once(Events.ClientReady, (c) => {
-  console.log(`[index] Conectado como ${c.user.tag}`);
+  console.log(`[index] Connected as ${c.user.tag}`);
   console.log(
-    `[index] Config: ventana=${config.windowMs}ms, minCanales=${config.minChannels}, ` +
-      `umbralImagen=${config.imageHashThreshold}`,
+    `[index] Config: window=${config.windowMs}ms, minChannels=${config.minChannels}, ` +
+      `imageThreshold=${config.imageHashThreshold}`,
   );
 });
 
 client.on(Events.MessageCreate, async (message) => {
-  // Ignorar bots, webhooks, mensajes del sistema y DMs.
+  // Ignore bots, webhooks, system messages and DMs.
   if (message.author.bot || message.webhookId) return;
   if (!message.inGuild()) return;
 
   const normText = normalizeText(message.content);
   const imageHashes = await hashAttachments(message);
 
-  // Sin contenido comparable (ni texto ni imágenes) → nada que hacer.
+  // Nothing comparable (neither text nor images) -> nothing to do.
   if (normText === "" && imageHashes.length === 0) return;
 
   const record: MsgRecord = {
@@ -83,12 +83,12 @@ client.on(Events.MessageCreate, async (message) => {
 });
 
 client.on(Events.Error, (err) => {
-  console.error("[index] Error del cliente Discord:", err);
+  console.error("[index] Discord client error:", err);
 });
 
-// Cierre limpio para `docker stop` (SIGTERM) y Ctrl-C (SIGINT).
+// Clean shutdown for `docker stop` (SIGTERM) and Ctrl-C (SIGINT).
 function shutdown(signal: string): void {
-  console.log(`[index] Recibido ${signal}, cerrando...`);
+  console.log(`[index] Received ${signal}, shutting down...`);
   client.destroy();
   process.exit(0);
 }
